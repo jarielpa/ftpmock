@@ -2,10 +2,12 @@ package io.puhos.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.Authority;
@@ -36,13 +38,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FTPServer {
 
-	@Value("${ftp.port:21}")
+	@Value("${ftp.port:2121}")
 	int ftpPort;
 
-	@Value("${sftp.port:22}")
+	@Value("${sftp.port:2222}")
 	int sftpPort;
 
-	@Value("${ftps.port:23}")
+	@Value("${ftps.port:2323}")
 	int ftpsPort;
 
 	@Value("${ftp.username:admin}")
@@ -92,7 +94,7 @@ public class FTPServer {
 		factory.setPort(ftpsPort);
 		// define SSL configuration
 		SslConfigurationFactory ssl = new SslConfigurationFactory();
-		ssl.setKeystoreFile(new File("src/main/resources/ftpkeystore.jks"));
+		ssl.setKeystoreFile(getKeyStoreFile("ftpkeystore.jks"));
 		ssl.setKeystorePassword("pass0101");
 		// set the SSL configuration for the listener
 		factory.setSslConfiguration(ssl.createSslConfiguration());
@@ -172,6 +174,17 @@ public class FTPServer {
 
 		return um;
 
+	}
+	
+	private File getKeyStoreFile(String fileName) {
+		URL source = FTPServer.class.getClassLoader().getResource(fileName);
+		File destination = new File(fileName);
+		try {
+			FileUtils.copyURLToFile(source, destination);
+		} catch (IOException e) {
+			throw new IllegalStateException("fail to copy key store file :" + fileName, e);
+		}
+		return destination;
 	}
 
 }

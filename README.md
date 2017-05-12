@@ -44,7 +44,7 @@ or for existing app
 
 	oc env dc/ftpmock -e JAVA_DEBUG=true -e JAVA_DEBUG_PORT=9009
  
-Open port for debugging.
+Open port for debugging, e.g.
 
 	oc port-forward ftpmocks-1-1uymm 5005:9009
 	
